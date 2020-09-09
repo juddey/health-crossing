@@ -7,7 +7,8 @@ defmodule Crossing.Commands.Attack do
         Nostrum.Api.create_message!(msg.channel_id, """
         You must join a raid to attack.
         """)
-
+      # I got confused with what you were doing here, with the  "raid member"
+      # Does this mean basically any truthy value?
       raid_member ->
         raid = Raids.get_active_raid()
 
@@ -39,8 +40,12 @@ defmodule Crossing.Commands.Attack do
 
             # 5. If attack is successful, lower the boss's health percentage accordingly. Print message to show who attacked and boss's status.
             # Cap the raid completion to 100%
+            # Good use of case here :)
             case {new_completion_pct >= 1.0, raid.active} do
               {true, true} ->
+                # Instead of calling the ChangeSet directly you mignt want to call into the context on a new function
+                # {:ok, raid } = Raid.update_raid(raid, %{completion_percentage: 1.0, active: false}))....
+                # Your call though
                 Raids.change_raid(raid, %{completion_percentage: 1.0, active: false})
                 |> Crossing.Repo.update!()
 
